@@ -16,6 +16,7 @@ Configuration
 ---
     /SET notifier_on_regex [regex]
     /SET notifier_channel_regex [regex]
+    /SET notifier_on_privmsg <0|1>
 
 Usage
 ---
@@ -34,6 +35,10 @@ Usage
  only notifier things for mychannel1 and mychannel2
 
     /SET notifier_channel_regex (mychannel1|mychannel2)
+
+ by default we don't send notifications for privmsgs you can enable this by setting this flag to 1
+
+    /SET notifier_on_privmsg 1 
 
 Didn't irssi-growl let me choose an icon?
 ---

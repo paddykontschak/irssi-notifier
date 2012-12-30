@@ -118,7 +118,10 @@ sub notifier_privmsg {
   # $host = host of the nick who sent the message
   my ($server, $data, $nick, $host) = @_;
     my ($target, $text) = split(/ :/, $data, 2);
-    # notifier_it($server, $nick, $data, $target, $nick); # actually, don't do this.
+    # only notify if we're permitting notification on privmsg
+    if (Irssi::settings_get_str('notifier_on_privmsg') == 1) {
+        notifier_it($server, $nick, $data, $target, $nick); 
+    }
   Irssi::signal_continue($server, $data, $nick, $host);
 }
 
@@ -126,6 +129,7 @@ sub notifier_privmsg {
 Irssi::settings_add_str('misc', 'notifier_on_regex', 0);      # false
 Irssi::settings_add_str('misc', 'notifier_channel_regex', 0); # false
 Irssi::settings_add_str('misc', 'notifier_on_nick', 1);       # true
+Irssi::settings_add_str('misc', 'notifier_on_privmsg', 0);    # false
 Irssi::signal_add('message public', 'notifier_message');
 Irssi::signal_add('message private', 'notifier_message');
 Irssi::signal_add('message own_public', 'notifier_message');
