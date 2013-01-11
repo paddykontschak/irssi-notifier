@@ -129,6 +129,7 @@ sub notifier_privmsg {
 }
 
 # Hook me up
+Irssi::settings_add_str('misc', 'notifier_voice', 0);      # false
 Irssi::settings_add_str('misc', 'notifier_on_regex', 0);      # false
 Irssi::settings_add_str('misc', 'notifier_channel_regex', 0); # false
 Irssi::settings_add_str('misc', 'notifier_on_nick', 1);       # true
