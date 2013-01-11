@@ -69,6 +69,9 @@ sub notifier_it {
     if($channel_filter && $server->ischannel($channel)) {
       return 0 if $channel !~ /$channel_filter/;
     }
+    if(index($data, 'identify') != -1) {
+      return 0;
+    }
 
     $title = $title . " " . $channel;
     do_notifier($server, $title, $data);
