@@ -51,6 +51,9 @@ sub do_notifier {
   my ($server, $title, $data) = @_;
     $data =~ s/["';]//g;
     system("terminal-notifier -message '$data' -title '$title' >> /dev/null 2>&1");
+    if (Irssi::settings_get_str('notifier_voice') == 1) {
+      system("say -v Vicki '$data'");
+    }
     return 1
 }
 
@@ -67,6 +70,9 @@ sub notifier_it {
     }
     if($channel_filter && $server->ischannel($channel)) {
       return 0 if $channel !~ /$channel_filter/;
+    }
+    if(index($data, 'identify') != -1) {
+      return 0;
     }
 
     $title = $title . " " . $channel;
@@ -126,6 +132,7 @@ sub notifier_privmsg {
 }
 
 # Hook me up
+Irssi::settings_add_str('misc', 'notifier_voice', 0);      # false
 Irssi::settings_add_str('misc', 'notifier_on_regex', 0);      # false
 Irssi::settings_add_str('misc', 'notifier_channel_regex', 0); # false
 Irssi::settings_add_str('misc', 'notifier_on_nick', 1);       # true
