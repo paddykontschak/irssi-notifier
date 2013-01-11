@@ -51,7 +51,9 @@ sub do_notifier {
   my ($server, $title, $data) = @_;
     $data =~ s/["';]//g;
     system("terminal-notifier -message '$data' -title '$title' >> /dev/null 2>&1");
-    system("say -v Vicki '$data'");
+    if (Irssi::settings_get_str('notifier_voice') == 1) {
+      system("say -v Vicki '$data'");
+    }
     return 1
 }
 
