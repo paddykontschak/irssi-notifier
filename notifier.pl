@@ -50,11 +50,31 @@ $VERSION = "0.0";
 sub do_notifier {
   my ($server, $title, $data, $sound) = @_;
   $data =~ s/["';]//g;
-  # You need to have terminal-notifier from here:
-  # https://github.com/alloy/terminal-notifier/tree/878042f5b9a4a64b92d504ddc0ff2edfebd35737
-  # with sound support
-  system("/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier -sound '$sound' -message '$data' -title '$title' >> /dev/null 2>&1");
-  return 1
+  my $note_path = Irssi::settings_get_str('notifier_path');
+  # This is safer so someones name of "bob;rm -rf $HOME;" doesn't screw you over
+  my @cmd = ($note_path, '-message', $data, '-title', $title);
+  if (Irssi::settings_get_str('notifier_play_sound') == 1) {
+    # You need to have terminal-notifier from here:
+    # https://github.com/alloy/terminal-notifier/tree/878042f5b9a4a64b92d504ddc0ff2edfebd35737
+    # with sound support
+    push(@cmd, '-sound');
+    push(@cmd, $sound);
+  }
+  # All in the name of security
+  # Grab whatever stdout and stderr are right now, and store them
+  open OLDOUT,">&STDOUT";
+  open OLDERR,">&STDERR";
+  # Set stdout/stderr to dev null
+  open(STDOUT,">> /dev/null");
+  open(STDERR,">&STDOUT");
+  # Actually run our arg list here
+  system(@cmd);
+  # Close the /dev/null stdout/stderr here
+  close(STDOUT);
+  close(STDERR);
+  # Reopen the originals
+  open(STDERR, ">&OLDERR");
+  open(STDOUT, ">&OLDOUT");
 }
 
 sub notifier_it {
@@ -152,11 +172,14 @@ sub notifier_privmsg {
 }
 
 # Hook me up
+Irssi::settings_add_str('misc', 'notifier_path',
+  "/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier"); # default install path
 Irssi::settings_add_str('misc', 'notifier_on_regex', 0);      # false
 Irssi::settings_add_str('misc', 'notifier_channel_regex', 0); # false
 Irssi::settings_add_str('misc', 'notifier_on_nick', 1);       # true
 Irssi::settings_add_str('misc', 'notifier_on_self', 0);       # false
 Irssi::settings_add_str('misc', 'notifier_on_privmsg', 0);    # false
+Irssi::settings_add_str('misc', 'notifier_play_sound', 0);    # false
 Irssi::settings_add_str('misc', 'notifier_sound', 'default'); # default system
 Irssi::signal_add('message public', 'notifier_message');
 Irssi::signal_add('message private', 'notifier_message');
