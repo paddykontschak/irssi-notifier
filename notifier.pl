@@ -50,6 +50,7 @@ $VERSION = "0.0";
 sub do_notifier {
   my ($server, $title, $data) = @_;
     $data =~ s/["';]//g;
+    $data = Irssi::strip_codes($data);
     system("terminal-notifier -message '$data' -title '$title' >> /dev/null 2>&1");
     return 1
 }
